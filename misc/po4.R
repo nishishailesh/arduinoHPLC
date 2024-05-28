@@ -1,0 +1,17 @@
+library("pracma")
+x=readline()
+data=read.csv(x)
+data1=data[!is.na(data$r1)  &   !is.na(data$r2),]
+data_curve=smooth.spline(data1$time,data1$r1)
+
+#pdf("x.pdf")
+par(mfrow=c(1,2))
+plot(data_curve,type="l")
+readline("press a key:")
+curve_derivative=predict(data_curve,deriv=1)
+plot(curve_derivative,type="l")
+readline("press a key:")
+peaks=findpeaks(data_curve$y)
+#peaks=findpeaks(curve_derivative$y)
+print(peaks)
+#dev.off()
