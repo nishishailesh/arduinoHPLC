@@ -26,18 +26,15 @@ def my_write(port,byte):
   return port.write(byte)
 
 #main loop##########################
-filename=input("Press a key to continue...:")
-#fd=open("data/"+filename,"wb",0)
-fd=open("/tmp/data.csv","wb",0)
-fd.write(b'time,value,value1\n')
+filename=input("File name (Something useful):")
+fd=open("data/"+filename,"w")
+fd.write(time.strftime("%Y-%m-%d %H:%m:%S")+','+'HPLC data\n')
 port=get_port()
 port.reset_output_buffer()	#USB buffer may not be flushed
 while True:
   byte=my_read(port)
-  #str=byte.decode()
-  #print(str,end="")
-  print(byte.decode(),end="")
-  #fd.write(str)
-  fd.write(byte)
+  str=byte.decode()
+  print(str,end="")
+  fd.write(str)
   #logging.debug(byte)
 close(fd)

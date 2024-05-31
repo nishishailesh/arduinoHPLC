@@ -1,0 +1,20 @@
+shinyApp(
+
+	ui = fluidPage(
+		    sidebarLayout(
+					sidebarPanel(),
+					mainPanel(plotOutput("plot"))
+				)
+		),
+
+	server = function(input, output, session) 
+	{
+		mydata <- reactiveFileReader(1000, session, '/tmp/data.csv', read.csv)
+		#data <- read.csv("/tmp/data.csv")
+		output$plot <- renderPlot({
+	              data=mydata()
+		      plot(data$time,data$value,type="l")
+		})
+	}
+
+	)
