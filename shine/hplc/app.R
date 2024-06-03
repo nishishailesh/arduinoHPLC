@@ -1,11 +1,15 @@
 library(shiny)
+library(pracma)
+options(scipen=999)
 ui = fluidPage(
         fluidRow(
                   column(12,htmlOutput("header")),
                   column(12,plotOutput("plot")),
-                  column(6,downloadButton("save_data", "Save Data")),
-                  column(6,fileInput("old_filename", label = h3("File input"))),
-                  column(12,plotOutput("old_plot"))
+                  column(4,downloadButton("save_data", "Save Data")),
+                  column(4,fileInput("old_filename", label = h3("File input"))),
+                  column(4,numericInput("cutoff", label = h3("Peak Cutoff"),value=1)),
+                  column(12,plotOutput("old_plot")),
+                  column(12,verbatimTextOutput("statistics"))
                   #column(12,mainPanel(verbatimTextOutput("old_text")))
 
                 )
@@ -29,6 +33,19 @@ server = function(input, output, session)
       paste("data-", Sys.Date(), ".csv", sep="")
     }
     
+    
+    statistics_function=function()
+    {
+      old_data=read.csv(file=input$old_filename$datapath,sep=",")
+      #old_data
+      aa_equation=smooth.spline(old_data$time,old_data$value,spar=0)
+      peaks=findpeaks(aa_equation$y)
+      print(paste("Peaks Data"))
+      #peaks
+      peaks[peaks[,1]>input$cutoff,]
+
+    }
+    
     #data <- read.csv("/tmp/data.csv")
     output$plot <- renderPlot(
                                 {
@@ -46,6 +63,9 @@ server = function(input, output, session)
                                   plot(old_data$time,old_data$value,type="l")
                                 }
                               )
+
+
+    output$statistics=renderPrint(statistics_function())
                               
     #output$old_text <- renderPrint({
     #str(input$old_filename$datapath)
